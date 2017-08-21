@@ -41,6 +41,7 @@ program regcm
 !
 !**********************************************************************
 !
+  write(stdout,*) 'RegCM non-ESMF mode'
   call mpi_init(ierr)
   call RCM_initialize()
 !

@@ -46,7 +46,8 @@
 !-----------------------------------------------------------------------
 !     Initialize ESMF framework and get default VM
 !-----------------------------------------------------------------------
-!
+!     
+      write(stdout,*) 'RegCM ESMF Mode'
       call ESMF_Initialize(vm=cplVM, rc=rc)
       if (rc /= ESMF_SUCCESS) call ESMF_Finalize(endflag=ESMF_END_ABORT)
 !
