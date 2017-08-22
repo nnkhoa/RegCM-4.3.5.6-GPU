@@ -229,6 +229,8 @@ module mod_regcm_interface
     implicit none
     real(rk8) , intent(in) :: timestr   ! starting time-step
     real(rk8) , intent(in) :: timeend   ! ending   time-step
+    real(rk8) :: start_sub_time
+    real(rk8) :: finish_sub_time
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -270,11 +272,21 @@ module mod_regcm_interface
       !
       ! Compute tendencies
       !
+      write(stdout,*) 'Computing tendencies'
+      call cpu_time(start_sub_time)
       call tend
+      call cpu_time(finish_sub_time)
+      write(stdout,*) 'Tendencies Computation Time: ', &
+              (finish_sub_time - start_sub_time)
       !
       ! Split modes
       !
+      write(stdout,*) 'Split Mode Start'
+      call cpu_time(start_sub_time)
       call splitf
+      call cpu_time(finish_sub_time)
+      write(stdout,*) 'Split Mode Time: ', &
+              (finish_sub_time - start_sub_time)
       !
       ! Boundary code (do not execute at the end of run)
       !
@@ -287,21 +299,38 @@ module mod_regcm_interface
             write (stdout,*) &
               'Calculate solar declination angle at ',toint10(idatex)
           end if
+          write(stdout,*) 'Solar declination angle Start'
+          call cpu_time(start_sub_time)
 #ifdef CLM
+          write(stdout,*) 'solar_clm'
           call solar_clm(idatex,calday,declin,xyear)
 #else
+          write(stdout,*) 'solar1'
           call solar1
 #endif
+          call cpu_time(finish_sub_time)
+          write(stdout,*) 'Solar declination angle Time: ', &
+              (finish_sub_time - start_sub_time)
           !
           ! Read in new boundary conditions
           !
+          write(stdout,*) 'Read new Boundary Start'
+          call cpu_time(start_sub_time)
           call bdyin
+          call cpu_time(finish_sub_time)
+          write(stdout,*) 'Read new Boundary Time: ', &
+              (finish_sub_time - start_sub_time)
 
         end if
         !
         ! fill up the boundary values for xxb and xxa variables:
         !
+        write(stdout,*) 'Fill Boundary Start'
+        call cpu_time(start_sub_time)
         call bdyval(xbctime)
+        call cpu_time(finish_sub_time)
+        write(stdout,*) 'Fill Boundary Time: ', &
+              (finish_sub_time - start_sub_time)
 
       end if
       !
