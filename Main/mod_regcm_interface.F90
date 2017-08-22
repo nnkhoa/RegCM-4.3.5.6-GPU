@@ -63,6 +63,12 @@ module mod_regcm_interface
   real(rk8) :: dtinc
   real(rk8) :: extime
 
+  real(rk8) :: tend_time
+  real(rk8) :: split_time
+  real(rk8) :: solar_time
+  real(rk8) :: new_bound_time
+  real(rk8) :: fill_bound_time
+
   data extime /d_zero/
   contains
  
@@ -231,11 +237,6 @@ module mod_regcm_interface
     real(rk8) , intent(in) :: timeend   ! ending   time-step
     real(rk8) :: start_sub_time
     real(rk8) :: finish_sub_time
-    real(rk8) :: tend_time
-    real(rk8) :: split_time
-    real(rk8) :: solar_time
-    real(rk8) :: new_bound_time
-    real(rk8) :: fill_bound_time
     character(len=32) :: appdat
 !
 #ifdef DEBUG
