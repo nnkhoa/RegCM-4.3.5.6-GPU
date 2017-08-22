@@ -231,6 +231,11 @@ module mod_regcm_interface
     real(rk8) , intent(in) :: timeend   ! ending   time-step
     real(rk8) :: start_sub_time
     real(rk8) :: finish_sub_time
+    real(rk8) :: tend_time
+    real(rk8) :: split_time
+    real(rk8) :: solar_time
+    real(rk8) :: new_bound_time
+    real(rk8) :: fill_bound_time
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -272,21 +277,23 @@ module mod_regcm_interface
       !
       ! Compute tendencies
       !
-      write(stdout,*) 'Computing tendencies'
+      !write(stderr,*) 'Computing tendencies'
       call cpu_time(start_sub_time)
       call tend
       call cpu_time(finish_sub_time)
-      write(stdout,*) 'Tendencies Computation Time: ', &
-              (finish_sub_time - start_sub_time)
+      tend_time = tend_time + (finish_sub_time - start_sub_time)
+      !write(stderr,*) 'Tendencies Computation Time: ', &
+      !        (finish_sub_time - start_sub_time)
       !
       ! Split modes
       !
-      write(stdout,*) 'Split Mode Start'
+      !write(stderr,*) 'Split Mode Start'
       call cpu_time(start_sub_time)
       call splitf
       call cpu_time(finish_sub_time)
-      write(stdout,*) 'Split Mode Time: ', &
-              (finish_sub_time - start_sub_time)
+      split_time = split_time + (finish_sub_time - start_sub_time)
+      !write(stderr,*) 'Split Mode Time: ', &
+      !        (finish_sub_time - start_sub_time)
       !
       ! Boundary code (do not execute at the end of run)
       !
@@ -299,38 +306,41 @@ module mod_regcm_interface
             write (stdout,*) &
               'Calculate solar declination angle at ',toint10(idatex)
           end if
-          write(stdout,*) 'Solar declination angle Start'
+          !write(stderr,*) 'Solar declination angle Start'
           call cpu_time(start_sub_time)
 #ifdef CLM
-          write(stdout,*) 'solar_clm'
+          write(stderr,*) 'solar_clm'
           call solar_clm(idatex,calday,declin,xyear)
 #else
-          write(stdout,*) 'solar1'
+          write(stderr,*) 'solar1'
           call solar1
 #endif
           call cpu_time(finish_sub_time)
-          write(stdout,*) 'Solar declination angle Time: ', &
-              (finish_sub_time - start_sub_time)
+          solar_time = solar_time + (finish_sub_time - start_sub_time)
+          !write(stdout,*) 'Solar declination angle Time: ', &
+          !    (finish_sub_time - start_sub_time)
           !
           ! Read in new boundary conditions
           !
-          write(stdout,*) 'Read new Boundary Start'
+          !write(stdout,*) 'Read new Boundary Start'
           call cpu_time(start_sub_time)
           call bdyin
           call cpu_time(finish_sub_time)
-          write(stdout,*) 'Read new Boundary Time: ', &
-              (finish_sub_time - start_sub_time)
+          new_bound_time = new_bound_time + (finish_sub_time - start_sub_time)
+          !write(stdout,*) 'Read new Boundary Time: ', &
+          !    (finish_sub_time - start_sub_time)
 
         end if
         !
         ! fill up the boundary values for xxb and xxa variables:
         !
-        write(stdout,*) 'Fill Boundary Start'
+        !write(stdout,*) 'Fill Boundary Start'
         call cpu_time(start_sub_time)
         call bdyval(xbctime)
         call cpu_time(finish_sub_time)
-        write(stdout,*) 'Fill Boundary Time: ', &
-              (finish_sub_time - start_sub_time)
+        !write(stdout,*) 'Fill Boundary Time: ', &
+        !      (finish_sub_time - start_sub_time)
+        fill_bound_time = fill_bound_time + (finish_sub_time - start_sub_time)
 
       end if
       !
@@ -392,7 +402,13 @@ module mod_regcm_interface
     call finaltime(myid)
 !
     if ( myid == italk ) then
+      write(stdout,*) 'Tendencies time: ', tend_time
+      write(stdout,*) 'Split time: ', split_time
+      write(stdout,*) 'Solar time: ', solar_time
+      write(stdout,*) 'New Boundary time: ', new_bound_time
+      write(stdout,*) 'Fill Boundary time: ', fill_bound_time
       write(stdout,*) 'RegCM V4 simulation successfully reached end'
+
     end if
 !
   end subroutine RCM_finalize
