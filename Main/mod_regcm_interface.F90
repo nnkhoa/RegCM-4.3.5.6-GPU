@@ -68,6 +68,7 @@ module mod_regcm_interface
   real(rk8) :: solar_time
   real(rk8) :: new_bound_time
   real(rk8) :: fill_bound_time
+  integer(ik4) :: no_loop
 
   data extime /d_zero/
   contains
@@ -243,7 +244,13 @@ module mod_regcm_interface
     ! if ( enable_newmicro ) call grid_nc_create('qqxp',cross,zqxn,qqxp)
     ! call grid_nc_create('qxatm',cross,atm1%qx,nc_4d)
 #endif
+    if (myid == italk) then
+      write(stdout,*) 'Execution Time = ', extime
+      write(stdout,*) 'Start Time = ', timestr
+      write(stdout,*) 'End Time = ', timeend
+    endif
     do while ( extime >= timestr .and. extime < timeend)
+      no_loop = no_loop + 1
 #ifdef DEBUG
       ! call grid_nc_write(nc_4d)
 #endif

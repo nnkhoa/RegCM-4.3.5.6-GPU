@@ -125,16 +125,18 @@ module mod_tendency
     !
     ! multiply ua and va by inverse of mapscale factor at dot point:
     !
-    write(stdout,*) 'kz = ', kz
-    write(stdout,*) 'ide1 = ', ide1
-    write(stdout,*) 'ide2 = ', ide2
-    write(stdout,*) 'jde1 = ', jde1
-    write(stdout,*) 'jde2 = ', jde2
-    write(stdout,*) 'idi1 = ', idi1
-    write(stdout,*) 'idi2 = ', idi2
-    write(stdout,*) 'jdi2 = ', jdi2
-    write(stdout,*) 'jdii1 = ', jdii1
-    write(stdout,*) 'jdii2 = ', jdii2
+    
+    !write(stdout,*) 'kz = ', kz
+    !write(stdout,*) 'ide1 = ', ide1
+    !write(stdout,*) 'ide2 = ', ide2
+    !write(stdout,*) 'jde1 = ', jde1
+    !write(stdout,*) 'jde2 = ', jde2
+    !write(stdout,*) 'idi1 = ', idi1
+    !write(stdout,*) 'idi2 = ', idi2
+    !write(stdout,*) 'jdi2 = ', jdi2
+    !write(stdout,*) 'jdii1 = ', jdii1
+    !write(stdout,*) 'jdii2 = ', jdii2
+    
     do k = 1 , kz
       do i = ide1 , ide2
         do j = jde1 , jde2
