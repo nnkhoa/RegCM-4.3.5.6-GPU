@@ -345,14 +345,16 @@ module mod_tendency
     if ( ichem == 1 ) then
       call exchange(atms%chib3d,2,jce1,jce2,ice1,ice2,1,kz,1,ntr)
     end if
-    write(stdout,*) 'ice1 = ', ice1
-    write(stdout,*) 'ice2 = ', ice2
-    write(stdout,*) 'jce1 = ', jce1
-    write(stdout,*) 'jce2 = ', jce2
-    write(stdout,*) 'ici1 = ', ici1
-    write(stdout,*) 'ici2 = ', ici2
-    write(stdout,*) 'jci1 = ', jci1
-    write(stdout,*) 'jci2 = ', jci2
+    
+    !write(stdout,*) 'ice1 = ', ice1
+    !write(stdout,*) 'ice2 = ', ice2
+    !write(stdout,*) 'jce1 = ', jce1
+    !write(stdout,*) 'jce2 = ', jce2
+    !write(stdout,*) 'ici1 = ', ici1
+    !write(stdout,*) 'ici2 = ', ici2
+    !write(stdout,*) 'jci1 = ', jci1
+    !write(stdout,*) 'jci2 = ', jci2
+    
     !
     ! compute the pressure tendency
     !
