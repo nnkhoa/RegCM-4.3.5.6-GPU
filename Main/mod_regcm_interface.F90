@@ -410,6 +410,7 @@ module mod_regcm_interface
     call finaltime(myid)
 !
     if ( myid == italk ) then
+      write(stdout,*) 'Number of loop: ', no_loop
       write(stdout,*) 'Tendencies time: ', tend_time
       write(stdout,*) 'Split time: ', split_time
       write(stdout,*) 'Solar time: ', solar_time
