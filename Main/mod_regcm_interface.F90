@@ -238,6 +238,8 @@ module mod_regcm_interface
     real(rk8) , intent(in) :: timeend   ! ending   time-step
     real(rk8) :: start_sub_time
     real(rk8) :: finish_sub_time
+    real(rk8) :: start_loop_time
+    real(rk8) :: end_loop_time
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -250,6 +252,7 @@ module mod_regcm_interface
       write(stdout,*) 'End Time = ', timeend
     endif
     do while ( extime >= timestr .and. extime < timeend)
+      call cpu_time(start_loop_time)
       no_loop = no_loop + 1
 #ifdef DEBUG
       ! call grid_nc_write(nc_4d)
@@ -376,6 +379,10 @@ module mod_regcm_interface
           appdat = tochar(idatex)
           write(6,'(a,a,f12.2)') 'Simulation time: ', appdat, extime
         end if
+      end if
+      call cpu_time(end_loop_time)
+      if ( myid == italk) then
+        write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
       end if
     end do
 
