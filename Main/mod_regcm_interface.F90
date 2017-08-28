@@ -19,7 +19,7 @@
 !
 
 module mod_regcm_interface
-
+  use omp_lib
   use mod_memutil
   use mod_service
   use mod_che_interface
@@ -251,7 +251,7 @@ module mod_regcm_interface
       write(stdout,*) 'Start Time = ', timestr
       write(stdout,*) 'End Time = ', timeend
     endif
-  !$OMP PARALLEL DO  
+    !$OMP PARALLEL DO  
     do while ( extime >= timestr .and. extime < timeend)
       call cpu_time(start_loop_time)
       no_loop = no_loop + 1
@@ -386,7 +386,7 @@ module mod_regcm_interface
         write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
       end if
     end do
-  !$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
   
 #ifdef DEBUG
     call stop_debug()
