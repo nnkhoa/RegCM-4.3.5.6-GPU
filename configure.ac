@@ -32,6 +32,7 @@ AC_PROG_CC
 AC_PROG_FC
 
 AC_LANG([Fortran])
+AC_OPENMP
 
 AX_PROG_NC_CONFIG([NC_PREFIX=`nc-config --prefix` && NCAUTO="yes"],
                   [NC_PREFIX="${NETCDF}" && NCAUTO="no"])
@@ -206,6 +207,7 @@ fi
 AC_SUBST(NC_PREFIX)
 
 AC_LANG_PUSH([C])
+AC_OPENMP
 AC_C_BIGENDIAN
 AC_LANG_POP([C])
 __AC_FC_NAME_MANGLING
