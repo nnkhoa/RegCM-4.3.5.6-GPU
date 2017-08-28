@@ -317,10 +317,14 @@ module mod_regcm_interface
           !write(stderr,*) 'Solar declination angle Start'
           call cpu_time(start_sub_time)
 #ifdef CLM
-          write(stderr,*) 'solar_clm'
+          if ( myid == italk ) then
+            write(stderr,*) 'solar_clm'
+          end if
           call solar_clm(idatex,calday,declin,xyear)
 #else
-          write(stderr,*) 'solar1'
+          if ( myid == italk ) then
+            write(stderr,*) 'solar1'
+          end if
           call solar1
 #endif
           call cpu_time(finish_sub_time)
