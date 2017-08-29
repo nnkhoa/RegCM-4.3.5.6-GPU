@@ -263,6 +263,7 @@ module mod_regcm_interface
       if (myid == italk) then
         write(stdout,*) 'Hello from thread: ', tid
         write(stdout,*) 'Number of thread: ', num_thread
+      end if
     !do while ( extime >= timestr .and. extime < timeend)
       if ( extime < timestr .or. extime >= timeend) then
         exit
