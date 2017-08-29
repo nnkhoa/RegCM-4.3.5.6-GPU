@@ -258,7 +258,7 @@ module mod_regcm_interface
     !$OMP PARALLEL DO  
     do i = 1, no_iteration
     !do while ( extime >= timestr .and. extime < timeend)
-      if ( extime < timestr .or. extime >= timeend)
+      if ( extime < timestr .or. extime >= timeend) then
         exit
       end if  
       call cpu_time(start_loop_time)
