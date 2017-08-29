@@ -19,6 +19,7 @@
 !
 
 module mod_regcm_interface
+  
   use omp_lib
   use mod_memutil
   use mod_service
@@ -240,7 +241,7 @@ module mod_regcm_interface
     real(rk8) :: finish_sub_time
     real(rk8) :: start_loop_time
     real(rk8) :: end_loop_time
-    integer(ik4) :: no_iteration, i
+    integer(ik4) :: no_iteration, i, t_id, num_thread
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -257,6 +258,11 @@ module mod_regcm_interface
 
     !$OMP PARALLEL DO  
     do i = 1, no_iteration
+      t_id = omp_get_thread_num()
+      num_thread = omp_get_num_threads()
+      if (myid == italk) then
+        write(stdout,*) 'Hello from thread: ', tid
+        write(stdout,*) 'Number of thread: ', num_thread
     !do while ( extime >= timestr .and. extime < timeend)
       if ( extime < timestr .or. extime >= timeend) then
         exit

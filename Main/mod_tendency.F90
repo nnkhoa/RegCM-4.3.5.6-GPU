@@ -19,6 +19,7 @@
  
 module mod_tendency
 
+  use omp_lib
   use mod_runparams
   use mod_mppparam
   use mod_mpmessage
@@ -101,7 +102,7 @@ module mod_tendency
                ptntot , qxas , qxbs , rovcpm , rtbar , sigpsa , tv , &
                tv1 , tv2 , tv3 , tv4 , tva , tvavg , tvb , tvc ,     &
                xmsf , xtm1 , theta , eccf
-    integer(ik4) :: i , itr , j , k , lev , n , ii , jj , kk , iconvec
+    integer(ik4) :: i , itr , j , k , lev , n , ii , jj , kk , iconvec, t_id, num_thread
     logical :: loutrad , labsem
     character (len=32) :: appdat
 #ifdef DEBUG
@@ -136,15 +137,20 @@ module mod_tendency
     !write(stdout,*) 'jdi2 = ', jdi2
     !write(stdout,*) 'jdii1 = ', jdii1
     !write(stdout,*) 'jdii2 = ', jdii2
-    
+    !$OMP PARALLEL DO
     do k = 1 , kz
       do i = ide1 , ide2
         do j = jde1 , jde2
+          t_id = omp_get_thread_num()
+          num_thread = omp_get_num_threads()
+          write(stdout,*) 'Hello from thread: ', t_id
+          write(stdout, *) 'Number of thread: ', num_thread
           atm1%u(j,i,k) = atm1%u(j,i,k)*mddom%msfd(j,i)
           atm1%v(j,i,k) = atm1%v(j,i,k)*mddom%msfd(j,i)
         end do
       end do
     end do
+    !$OMP END PARALLEL DO 
 
     call exchange(sfs%psa,1,jce1,jce2,ice1,ice2)
     call psc2psd(sfs%psa,psdot)
