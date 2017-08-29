@@ -240,6 +240,7 @@ module mod_regcm_interface
     real(rk8) :: finish_sub_time
     real(rk8) :: start_loop_time
     real(rk8) :: end_loop_time
+    integer(ik4) :: no_iteration, i
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -251,8 +252,15 @@ module mod_regcm_interface
       write(stdout,*) 'Start Time = ', timestr
       write(stdout,*) 'End Time = ', timeend
     endif
+    
+    no_iteration = (timeend - timestr)/dtinc
+
     !$OMP PARALLEL DO  
-    do while ( extime >= timestr .and. extime < timeend)
+    do i = 1, no_iteration
+    !do while ( extime >= timestr .and. extime < timeend)
+      if ( extime < timestr .or. extime >= timeend)
+        exit
+      end if  
       call cpu_time(start_loop_time)
       no_loop = no_loop + 1
 #ifdef DEBUG
