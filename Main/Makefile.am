@@ -194,7 +194,7 @@ regcm_esmf.o: regcm_esmf.F90 mod_couplerr.o mod_esmf_atm.o mod_esmf_ocn.o mod_es
 	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
 else
 regcm_nonesmf.o: regcm_nonesmf.F90 mod_regcm_interface.o mod_runparams.o
-	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -fopenmp -c $<
+	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
 endif
 #
 # RegCM Main Program
