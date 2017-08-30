@@ -256,18 +256,15 @@ module mod_regcm_interface
     
     no_iteration = (timeend - timestr)/dtinc
 
-    !$OMP PARALLEL DO  
-    do i = 1, no_iteration
-      t_id = omp_get_thread_num()
-      num_thread = omp_get_num_threads()
-      if (myid == italk) then
-        write(stdout,*) 'Hello from thread: ', tid
-        write(stdout,*) 'Number of thread: ', num_thread
-      end if
-    !do while ( extime >= timestr .and. extime < timeend)
-      if ( extime < timestr .or. extime >= timeend) then
-        exit
-      end if  
+    ! !$OMP PARALLEL DO  
+    ! do i = 1, no_iteration
+    !   t_id = omp_get_thread_num()
+    !   num_thread = omp_get_num_threads()
+    !   if (myid == italk) then
+    !     write(stdout,*) 'Hello from thread: ', tid
+    !     write(stdout,*) 'Number of thread: ', num_thread
+    !   end if
+    do while ( extime >= timestr .and. extime < timeend)  
       call cpu_time(start_loop_time)
       no_loop = no_loop + 1
 #ifdef DEBUG
@@ -401,7 +398,7 @@ module mod_regcm_interface
         write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
       end if
     end do
-    !$OMP END PARALLEL DO
+    ! !$OMP END PARALLEL DO
   
 #ifdef DEBUG
     call stop_debug()
