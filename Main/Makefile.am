@@ -80,7 +80,7 @@ else
 endif
 
 LIBS = $(LMPPLIB) $(LCLMLIB) $(LNETLIB) $(LCHELIB) $(LCBMZLIB) $(LBATLIB) \
-       $(LCUMLIB) $(LRADLIB) $(LPBLLIB) $(LRRTMSWLIB) $(SYSLIBS)
+       $(LCUMLIB) $(LRADLIB) $(LPBLLIB) $(LRRTMSWLIB) $(SYSLIBS) -liomp5
 
 bin_PROGRAMS = regcm
 
@@ -165,7 +165,7 @@ else
 mod_regcm_interface.o: mod_regcm_interface.F90 mod_memutil.o mod_service.o mod_che_interface.o mod_atm_interface.o mod_pbl_interface.o mod_runparams.o mod_mppparam.o mod_mpmessage.o mod_ncio.o mod_ncout.o mod_output.o mod_split.o mod_bdycod.o mod_init.o mod_header.o mod_params.o mod_tendency.o mod_tstep.o mod_service.o mod_mppio.o mod_cloud_s1.o mod_sun.o
 endif
 endif
-	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
 if DO_COMPILE_LIBCLM
 mod_savefile.o: mod_savefile.F90 mod_runparams.o mod_mpmessage.o mod_mppparam.o mod_atm_interface.o mod_lm_interface.o mod_che_interface.o mod_rad_interface.o mod_cu_interface.o mod_pbl_interface.o mod_bdycod.o mod_mppio.o mod_clm.o restFileMod.o restFileMod.o clm_varctl.o clm_time_manager.o
 else
@@ -191,10 +191,10 @@ mod_esmf_ocn.o: mod_esmf_ocn.F90 mod_dynparam.o mod_mppparam.o mod_constants.o m
 mod_esmf_cpl.o: mod_esmf_cpl.F90 mod_couplerr.o
 mod_update.o: mod_update.F90 mod_runparams.o mod_dynparam.o mod_mppparam.o mod_constants.o mod_bats_common.o mod_atm_interface.o mod_couplerr.o
 regcm_esmf.o: regcm_esmf.F90 mod_couplerr.o mod_esmf_atm.o mod_esmf_ocn.o mod_esmf_cpl.o mod_update.o
-	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
 else
 regcm_nonesmf.o: regcm_nonesmf.F90 mod_regcm_interface.o mod_runparams.o
-	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -fopenmp -c $<
 endif
 #
 # RegCM Main Program
@@ -204,4 +204,4 @@ regcm.o: regcm.f90 mod_dynparam.o $(MPPLIB) $(CLMLIB) $(NETLIB) $(CHELIB) $(CBMZ
 else
 regcm.o: regcm.f90 mod_dynparam.o $(MPPLIB) $(CLMLIB) $(NETLIB) $(CHELIB) $(CBMZLIB) $(BATLIB) $(CUMLIB) $(RADLIB) $(PBLLIB) $(RRTMSWLIB)
 endif
-	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
