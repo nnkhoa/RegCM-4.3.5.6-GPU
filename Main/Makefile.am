@@ -177,7 +177,7 @@ mod_sun.o: mod_sun.F90 mod_intkinds.o mod_realkinds.o mod_constants.o mod_dynpar
 if DO_COMPILE_LIBCLM
 mod_tendency.o: mod_tendency.F90 mod_runparams.o mod_mppparam.o mod_mpmessage.o mod_stdio.o mod_service.o mod_memutil.o mod_atm_interface.o mod_che_interface.o mod_cu_interface.o mod_lm_interface.o mod_rad_interface.o mod_pbl_interface.o mod_bdycod.o mod_precip.o mod_slice.o mod_sun.o mod_advection.o mod_diffusion.o mod_mppio.o mod_domain.o mod_cloud_s1.o mod_slabocean.o mod_clm.o mod_mtrxclm.o clm_varsur.o
 	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
-	else
+else
 mod_tendency.o: mod_tendency.F90 mod_runparams.o mod_mppparam.o mod_mpmessage.o mod_stdio.o mod_service.o mod_memutil.o mod_atm_interface.o mod_che_interface.o mod_cu_interface.o mod_lm_interface.o mod_rad_interface.o mod_pbl_interface.o mod_bdycod.o mod_precip.o mod_slice.o mod_sun.o mod_advection.o mod_diffusion.o mod_mppio.o mod_domain.o mod_cloud_s1.o mod_slabocean.o
 endif
 	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -fopenmp -c $<
