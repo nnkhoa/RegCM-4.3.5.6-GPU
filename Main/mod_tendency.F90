@@ -142,9 +142,9 @@ module mod_tendency
       do i = ide1 , ide2
         do j = jde1 , jde2
           !t_id = omp_get_thread_num()
-          !num_thread = omp_get_num_threads()
+          num_thread = omp_get_num_threads()
           !write(stdout,*) 'Hello from thread: ', t_id
-          !write(stdout, *) 'Number of thread: ', num_thread
+          write(stdout, *) 'Number of thread: ', num_thread
           atm1%u(j,i,k) = atm1%u(j,i,k)*mddom%msfd(j,i)
           atm1%v(j,i,k) = atm1%v(j,i,k)*mddom%msfd(j,i)
         end do
@@ -172,27 +172,27 @@ module mod_tendency
     ! Boundary points
     !
     if ( ma%has_bdyleft ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           atmx%u(jdi1,i,k) = wui(i,k)
           atmx%v(jdi1,i,k) = wvi(i,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           atmx%u(jde1,i,k) = wue(i,k)
           atmx%v(jde1,i,k) = wve(i,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
       ! inflow/outflow dependence
       if ( iboudy == 3 .or. iboudy == 4 ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = idi1 , idi2
             if ( atmx%u(jde1,i,k) <= d_zero ) then
@@ -201,30 +201,30 @@ module mod_tendency
             end if
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdyright ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           atmx%u(jdi2,i,k) = eui(i,k)
           atmx%v(jdi2,i,k) = evi(i,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           atmx%u(jde2,i,k) = eue(i,k)
           atmx%v(jde2,i,k) = eve(i,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       ! inflow/outflow dependence
       if ( iboudy == 3 .or. iboudy == 4 ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = idi1 , idi2
             if ( atmx%u(jde2,i,k) >= d_zero ) then
@@ -233,31 +233,31 @@ module mod_tendency
             end if
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdybottom ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do j = jdi1 , jdi2
           atmx%u(j,idi1,k) = sui(j,k)
           atmx%v(j,idi1,k) = svi(j,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do j = jde1 , jde2
           atmx%u(j,ide1,k) = sue(j,k)
           atmx%v(j,ide1,k) = sve(j,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! inflow/outflow dependence
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jde1 , jde2
             if ( atmx%v(j,ide1,k) >= d_zero ) then
@@ -266,30 +266,30 @@ module mod_tendency
             end if
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdytop ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do j = jdi1 , jdi2
           atmx%u(j,idi2,k) = nui(j,k)
           atmx%v(j,idi2,k) = nvi(j,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do j = jde1 , jde2
           atmx%u(j,ide2,k) = nue(j,k)
           atmx%v(j,ide2,k) = nve(j,k)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! inflow/outflow dependence
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jde1 , jde2
             if ( atmx%v(j,ide2,k) <= d_zero ) then
@@ -298,13 +298,13 @@ module mod_tendency
             end if
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     end if
     !
     ! T , QV , QC decouple
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
@@ -312,9 +312,9 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do n = 1 , nqx
       do k = 1 , kz
         do i = ice1 , ice2
@@ -324,12 +324,12 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     ! call tracer decoupling routine for multiple (ntr) species
     !
     if ( ichem == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do n = 1 , ntr
         do k = 1 , kz
           do i = ice1 , ice2
@@ -339,7 +339,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
 !
 !=======================================================================
@@ -404,7 +404,7 @@ module mod_tendency
     ! compute the pressure tendency
     !
     pten(:,:) = d_zero
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
@@ -417,12 +417,12 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     ! compute vertical sigma-velocity (qdot):
     !
     qdot(:,:,:)  = d_zero
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 2 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
@@ -432,14 +432,14 @@ module mod_tendency
          end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
     call exchange(qdot,1,jce1,jce2,ice1,ice2,1,kzp1)
     !
     ! compute omega
     !
     omega(:,:,:) = d_zero
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -455,7 +455,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
     if ( iboudy == 4 ) then
       call sponge(ba_cr,xpsb,pten)
@@ -466,41 +466,41 @@ module mod_tendency
     !
     ! psc : forecast pressure
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do i = ici1 , ici2
       do j = jci1 , jci2
         psc(j,i) = sfs%psb(j,i) + pten(j,i)*dt
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
     if ( ma%has_bdyleft ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ici1 , ici2
         psc(jce1,i) = sfs%psb(jce1,i) + xpsb%bt(jce1,i)*dt
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdyright ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ici1 , ici2
         psc(jce2,i) = sfs%psb(jce2,i) + xpsb%bt(jce2,i)*dt
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdybottom ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do j = jce1 , jce2
         psc(j,ice1) = sfs%psb(j,ice1) + xpsb%bt(j,ice1)*dt
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdytop ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do j = jce1 , jce2
         psc(j,ice2) = sfs%psb(j,ice2) + xpsb%bt(j,ice2)*dt
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     !
     ! compute bleck (1977) noise parameters:
@@ -509,7 +509,7 @@ module mod_tendency
       ptntot = d_zero
       pt2tot = d_zero
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ici1 , ici2
         do j = jci1 , jci2
           ptntot = ptntot + dabs(pten(j,i))
@@ -517,7 +517,7 @@ module mod_tendency
                    d_two*sfs%psa(j,i))/(dt*dt*d_rfour))
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     !
     ! calculate solar zenith angle
@@ -540,7 +540,7 @@ module mod_tendency
     ! the values are calculated at cross points, but they also used
     ! for dot-point variables.
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 2 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -572,7 +572,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     ! Initialize the tendencies
     !
@@ -621,7 +621,7 @@ module mod_tendency
     !
     ! compute the adiabatic term:
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -632,7 +632,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_temperature_tendency('DIAB')
 #endif
@@ -861,7 +861,7 @@ module mod_tendency
     ! add ccm radiative transfer package-calculated heating rates to
     ! temperature tendency
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -870,7 +870,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_temperature_tendency('HEAT')
 #endif
@@ -885,7 +885,7 @@ module mod_tendency
     !
     ! add horizontal diffusion and pbl tendencies for t and qv
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -893,9 +893,9 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -903,13 +903,13 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     ! compute the condensation and precipitation terms for explicit
     ! moisture scheme:
     !
     if ( ipptls == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
@@ -917,7 +917,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       call condtq(psc)
     end if
     !
@@ -943,7 +943,7 @@ module mod_tendency
     !
     ! forecast t, qv, and qc at tau+1:
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -951,9 +951,9 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do n = 1 , nqx
       do k = 1 , kz
         do i = ici1 , ici2
@@ -963,12 +963,12 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     ! forecast tracer chi at at tau+1:
     !
     if ( ichem == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do itr = 1 , ntr
         do k = 1 , kz
           do i = ici1 , ici2
@@ -978,13 +978,13 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     !
     ! compute weighted p*t (td) for use in ssi:
     !
     if ( ipgf == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
@@ -998,10 +998,10 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
       if ( ma%has_bdyleft ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = ici1 , ici2
             td(jce1,i,k) = atm1%t(jce1,i,k)*(d_one+ep1*(atmx%qx(jce1,i,k,iqv)))
@@ -1009,10 +1009,10 @@ module mod_tendency
                         t00pg*((hsigma(k)*sfs%psa(jce1,i)+ptop)/p00pg)**pgfaa1
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdyright ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = ici1 , ici2
             td(jce2,i,k) = atm1%t(jce2,i,k)*(d_one+ep1*(atmx%qx(jce2,i,k,iqv)))
@@ -1020,10 +1020,10 @@ module mod_tendency
                      t00pg*((hsigma(k)*sfs%psa(jce2,i)+ptop)/p00pg)**pgfaa1
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdybottom ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jce1 , jce2
             td(j,ice1,k) = atm1%t(j,ice1,k)*(d_one+ep1*(atmx%qx(j,ice1,k,iqv)))
@@ -1031,10 +1031,10 @@ module mod_tendency
                      t00pg*((hsigma(k)*sfs%psa(j,ice1)+ptop)/p00pg)**pgfaa1
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdytop ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jce1 , jce2
             td(j,ice2,k) = atm1%t(j,ice2,k)*(d_one+ep1*(atmx%qx(j,ice2,k,iqv)))
@@ -1042,10 +1042,10 @@ module mod_tendency
                      t00pg*((hsigma(k)*sfs%psa(j,ice2)+ptop)/p00pg)**pgfaa1
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     else if ( ipgf == 0 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
@@ -1057,43 +1057,43 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
       if ( ma%has_bdyleft ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = ici1 , ici2
             td(jce1,i,k) = atm1%t(jce1,i,k)*(d_one+ep1*(atmx%qx(jce1,i,k,iqv)))
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdyright ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do i = ici1 , ici2
             td(jce2,i,k) = atm1%t(jce2,i,k)*(d_one+ep1*(atmx%qx(jce2,i,k,iqv)))
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdybottom ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jce1 , jce2
             td(j,ice1,k) = atm1%t(j,ice1,k)*(d_one+ep1*(atmx%qx(j,ice1,k,iqv)))
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdytop ) then
-        !$OMP PARALLEL DO
+        ! $OMP PARALLEL DO
         do k = 1 , kz
           do j = jce1 , jce2
             td(j,ice2,k) = atm1%t(j,ice2,k)*(d_one+ep1*(atmx%qx(j,ice2,k,iqv)))
           end do
         end do
-        !$OMP END PARALLEL DO
+        ! $OMP END PARALLEL DO
       end if
     end if
     !
@@ -1102,7 +1102,7 @@ module mod_tendency
     !   compute the diffusion terms:
     !   put diffusion and pbl tendencies of u and v in difuu and difuv.
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1111,7 +1111,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     call diffu_d(adf%difuu,atms%ubd3d,psdot,mddom%msfd,xkc,1)
     call diffu_d(adf%difuv,atms%vbd3d,psdot,mddom%msfd,xkc,1)
@@ -1131,7 +1131,7 @@ module mod_tendency
     !
     ! compute coriolis terms:
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1142,7 +1142,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('CORI')
 #endif
@@ -1150,7 +1150,7 @@ module mod_tendency
     ! compute pressure gradient terms:
     !
     if ( ipgf == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           do j = jdi1 , jdi2
@@ -1177,9 +1177,9 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     else if ( ipgf == 0 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = idi1 , idi2
           do j = jdi1 , jdi2
@@ -1204,7 +1204,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
 #ifdef DEBUG
     call check_wind_tendency('PRGR')
@@ -1213,7 +1213,7 @@ module mod_tendency
     ! compute geopotential height at half-k levels, cross points:
     !
     if ( ipgf == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ice1 , ice2
         do j = jce1 , jce2
           tv = (ttld(j,i,kz)/sfs%psa(j,i))/(d_one+atmx%qx(j,i,kz,iqc)/ &
@@ -1224,9 +1224,9 @@ module mod_tendency
                   dlog((hsigma(kz)+ptop/sfs%psa(j,i))/(d_one+ptop/sfs%psa(j,i)))
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kzm1
         lev = kz - k
         do i = ice1 , ice2
@@ -1241,10 +1241,10 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
     else if ( ipgf == 0 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ice1 , ice2
         do j = jce1 , jce2
           tv = (td(j,i,kz)/sfs%psa(j,i))/(d_one+atmx%qx(j,i,kz,iqc)/  &
@@ -1253,9 +1253,9 @@ module mod_tendency
                dlog((hsigma(kz)+ptop/sfs%psa(j,i))/(d_one+ptop/sfs%psa(j,i)))
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kzm1
         lev = kz - k
         do i = ice1 , ice2
@@ -1270,14 +1270,14 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     call exchange_lb(phi,1,jce1,jce2,ice1,ice2,1,kz)
     !
     ! compute the geopotential gradient terms:
     !
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1294,7 +1294,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('GEOP')
 #endif
@@ -1327,7 +1327,7 @@ module mod_tendency
     !
     ! add the diffusion and pbl tendencies to aten%u and aten%v:
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1336,14 +1336,14 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('DIFF')
 #endif
     !
     ! forecast p*u and p*v at tau+1:
     !
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1352,12 +1352,12 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     !
     !  Couple TKE to ps for use in vertical advection
     !
     if ( ibltyp == 2 .or. ibltyp == 99 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kzp1
         do i = ice1 , ice2
           do j = jce1 , jce2
@@ -1366,15 +1366,15 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
 
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do i = ice1 , ice2
         do j = jce1 , jce2
           uwstatea%tkeps(j,i,kz+1) = atm1%tke(j,i,kz+1)*sfs%psa(j,i)
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     if ( ibltyp == 2 .or. ibltyp == 99 ) then
       ! Calculate the horizontal advective tendency for TKE
@@ -1388,7 +1388,7 @@ module mod_tendency
     !   store the xxa variables in xxb and xxc in xxa:
     !   perform time smoothing operations.
     !
-    !$OMP PARALLEL DO
+    !$ OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -1419,9 +1419,9 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
@@ -1431,9 +1431,9 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do n = 1 , nqx
       do k = 1 , kz
         do i = ici1 , ici2
@@ -1463,10 +1463,10 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
 
     if ( ichem == 1 ) then
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do itr = 1 , ntr
         do k = 1 , kz
           do i = ici1 , ici2
@@ -1482,7 +1482,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
     end if
     do i = ici1 , ici2
       do j = jci1 , jci2
@@ -1524,7 +1524,7 @@ module mod_tendency
         if ( (maxv/dtsec) > 0.01D0 ) then ! 50 K per hour
           write(stderr,*) 'MAXVAL ATEN T :', maxv
           maxv = maxv - 0.001D0
-          !$OMP PARALLEL DO
+          ! $OMP PARALLEL DO
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
@@ -1536,13 +1536,13 @@ module mod_tendency
               end do
             end do
           end do
-          !$OMP END PARALLEL DO
+          ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%u))
         if ( (maxv/dtsec) > 0.005D0 ) then  ! 25 m/s per hour
           write(stderr,*) 'MAXVAL ATEN U :', maxv
           maxv = maxv - 0.001D0
-          !$OMP PARALLEL DO
+          ! $OMP PARALLEL DO
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
@@ -1553,13 +1553,13 @@ module mod_tendency
               end do
             end do
           end do
-          !$OMP END PARALLEL DO
+          ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%v))
         if ( (maxv/dtsec) > 0.005D0 ) then  ! 25 m/s per hour
           write(stderr,*) 'MAXVAL ATEN V :', maxv
           maxv = maxv - 0.001D0
-          !$OMP PARALLEL DO
+          ! $OMP PARALLEL DO
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
@@ -1570,13 +1570,13 @@ module mod_tendency
               end do
             end do
           end do
-          !$OMP END PARALLEL DO
+          ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%qx(:,:,:,iqv)))
         if ( (maxv/dtsec) > 0.001D0 ) then ! 
           write(stderr,*) 'MAXVAL ATEN QV :', maxv
           maxv = maxv - 0.001D0
-          !$OMP PARALLEL DO
+          ! $OMP PARALLEL DO
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
@@ -1588,13 +1588,13 @@ module mod_tendency
               end do
             end do
           end do
-          !$OMP END PARALLEL DO
+          ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%qx(:,:,:,iqc)))
         if ( (maxv/dtsec) > 0.001D0 ) then ! 
           write(stderr,*) 'MAXVAL ATEN QC :', maxv
           maxv = maxv - 0.001D0
-          !$OMP PARALLEL DO
+          ! $OMP PARALLEL DO
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
@@ -1606,7 +1606,7 @@ module mod_tendency
               end do
             end do
           end do
-          !$OMP END PARALLEL DO
+          ! $OMP END PARALLEL DO
         end if
         write (*,*) 'WHUUUUBBBASAAAGASDDWD!!!!!!!!!!!!!!!!'
         write (*,*) 'No more atmosphere here....'
@@ -1651,7 +1651,7 @@ module mod_tendency
       integer(ik4) :: i , j , k , kk , ierr
       real(rk8) :: check_tt
       ierr = 0
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = ice1, ice2
           do j = jce1 , jce2
@@ -1676,7 +1676,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       if ( ierr /= 0 ) then
         call fatal(__FILE__,__LINE__,'TEMP TENDENCY ERROR')
       end if
@@ -1690,7 +1690,7 @@ module mod_tendency
       integer(ik4) :: i , j , k , kk , ierr
       real(rk8) :: check_ww , ten_wspd
       ierr = 0
-      !$OMP PARALLEL DO
+      ! $OMP PARALLEL DO
       do k = 1 , kz
         do i = ide1, ide2
           do j = jde1 , jde2
@@ -1716,7 +1716,7 @@ module mod_tendency
           end do
         end do
       end do
-      !$OMP END PARALLEL DO
+      ! $OMP END PARALLEL DO
       if ( ierr /= 0 ) then
         call fatal(__FILE__,__LINE__,'WIND TENDENCY ERROR')
       end if
