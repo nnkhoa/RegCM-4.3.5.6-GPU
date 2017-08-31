@@ -1388,7 +1388,7 @@ module mod_tendency
     !   store the xxa variables in xxb and xxc in xxa:
     !   perform time smoothing operations.
     !
-    !$ OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
