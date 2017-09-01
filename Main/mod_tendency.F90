@@ -58,6 +58,9 @@ module mod_tendency
   real(rk8) , pointer , dimension(:,:,:) :: ps_4 
   real(rk8) , pointer , dimension(:,:) :: psc , pten
 
+  real(rk8) :: start_loop, end_loop
+  integer(ik4) :: num_loop
+
 #ifdef DEBUG
   real(rk8) , pointer , dimension(:,:,:) :: last_tten
   real(rk8) , pointer , dimension(:,:,:) :: last_wten
@@ -137,167 +140,267 @@ module mod_tendency
     !write(stdout,*) 'jdi2 = ', jdi2
     !write(stdout,*) 'jdii1 = ', jdii1
     !write(stdout,*) 'jdii2 = ', jdii2
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
+    !LOOP 1
+    num_loop = 0
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ide1 , ide2
         do j = jde1 , jde2
           !t_id = omp_get_thread_num()
-          num_thread = omp_get_num_threads()
+          !num_thread = omp_get_num_threads()
           !write(stdout,*) 'Hello from thread: ', t_id
-          write(stdout, *) 'Number of thread: ', num_thread
+          !write(stdout, *) 'Number of thread: ', num_thread
+          num_loop = num_loop + 1
           atm1%u(j,i,k) = atm1%u(j,i,k)*mddom%msfd(j,i)
           atm1%v(j,i,k) = atm1%v(j,i,k)*mddom%msfd(j,i)
         end do
       end do
     end do
-    !$OMP END PARALLEL DO 
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 1 time: ', end_loop -start_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
+    ! $OMP END PARALLEL DO 
 
     call exchange(sfs%psa,1,jce1,jce2,ice1,ice2)
     call psc2psd(sfs%psa,psdot)
     !
     ! Internal U,V points
     !
-    !$OMP PARALLEL DO
+    !LOOP 2
+    ! $OMP PARALLEL DO
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idii1 , idii2
         do j = jdii1 , jdii2
+          num_loop = num_loop + 1
           xmsf = mddom%msfd(j,i)
           atmx%u(j,i,k) = atm1%u(j,i,k)/(psdot(j,i)*xmsf)
           atmx%v(j,i,k) = atm1%v(j,i,k)/(psdot(j,i)*xmsf)
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 2 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
+    ! $OMP END PARALLEL DO
     !
     ! Boundary points
     !
     if ( ma%has_bdyleft ) then
       ! $OMP PARALLEL DO
+      !LOOP 3
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
+          num_loop = num_loop + 1
           atmx%u(jdi1,i,k) = wui(i,k)
           atmx%v(jdi1,i,k) = wvi(i,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 3 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       
       ! $OMP PARALLEL DO
+      !LOOP 4
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
+          num_loop = num_loop + 1
           atmx%u(jde1,i,k) = wue(i,k)
           atmx%v(jde1,i,k) = wve(i,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 4 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! inflow/outflow dependence
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! $OMP PARALLEL DO
+        !LOOP 5
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = idi1 , idi2
             if ( atmx%u(jde1,i,k) <= d_zero ) then
+              num_loop = num_loop + 1
               atmx%u(jde1,i,k) = atmx%u(jdi1,i,k)
               atmx%v(jde1,i,k) = atmx%v(jdi1,i,k)
             end if
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 5 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdyright ) then
       ! $OMP PARALLEL DO
+      !LOOP 6
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
+          num_loop = num_loop + 1
           atmx%u(jdi2,i,k) = eui(i,k)
           atmx%v(jdi2,i,k) = evi(i,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 6 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 7
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
+          num_loop = num_loop + 1
           atmx%u(jde2,i,k) = eue(i,k)
           atmx%v(jde2,i,k) = eve(i,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 7 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       ! inflow/outflow dependence
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! $OMP PARALLEL DO
+        !LOOP 8
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = idi1 , idi2
+            num_loop = num_loop + 1
             if ( atmx%u(jde2,i,k) >= d_zero ) then
               atmx%u(jde2,i,k) = atmx%u(jdi2,i,k)
               atmx%v(jde2,i,k) = atmx%v(jdi2,i,k)
             end if
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 8 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdybottom ) then
       ! $OMP PARALLEL DO
+      !LOOP 9
+      call cpu_time(start_loop)
       do k = 1 , kz
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           atmx%u(j,idi1,k) = sui(j,k)
           atmx%v(j,idi1,k) = svi(j,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 9 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
+
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 10
+      call cpu_time(start_loop)
       do k = 1 , kz
         do j = jde1 , jde2
+          num_loop = num_loop + 1
           atmx%u(j,ide1,k) = sue(j,k)
           atmx%v(j,ide1,k) = sve(j,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 10 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! inflow/outflow dependence
         ! $OMP PARALLEL DO
+        !LOOP 11
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jde1 , jde2
+            num_loop = num_loop + 1
             if ( atmx%v(j,ide1,k) >= d_zero ) then
               atmx%v(j,ide1,k) = atmx%v(j,idi1,k)
               atmx%u(j,ide1,k) = atmx%u(j,idi1,k)
             end if
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 11 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     end if
     if ( ma%has_bdytop ) then
       ! $OMP PARALLEL DO
+      !LOOP 12
+      call cpu_time(start_loop)
       do k = 1 , kz
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           atmx%u(j,idi2,k) = nui(j,k)
           atmx%v(j,idi2,k) = nvi(j,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 12 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 13
+      call cpu_time(start_loop)
       do k = 1 , kz
         do j = jde1 , jde2
+          num_loop = num_loop + 1
           atmx%u(j,ide2,k) = nue(j,k)
           atmx%v(j,ide2,k) = nve(j,k)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 13 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       if ( iboudy == 3 .or. iboudy == 4 ) then
         ! inflow/outflow dependence
         ! $OMP PARALLEL DO
+        !LOOP 14
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jde1 , jde2
+            num_loop = num_loop + 1
             if ( atmx%v(j,ide2,k) <= d_zero ) then
               atmx%v(j,ide2,k) = atmx%v(j,idi2,k)
               atmx%u(j,ide2,k) = atmx%u(j,idi2,k)
             end if
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 14 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     end if
@@ -305,40 +408,61 @@ module mod_tendency
     ! T , QV , QC decouple
     !
     ! $OMP PARALLEL DO
+    !LOOP 15
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           atmx%t(j,i,k) = atm1%t(j,i,k)/sfs%psa(j,i)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 15 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     ! $OMP PARALLEL DO
+    !LOOP 16
+    call cpu_time(start_loop)
     do n = 1 , nqx
       do k = 1 , kz
         do i = ice1 , ice2
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             atmx%qx(j,i,k,n) = atm1%qx(j,i,k,n)/sfs%psa(j,i)
           end do
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 16 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     ! call tracer decoupling routine for multiple (ntr) species
     !
     if ( ichem == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 17
+      call cpu_time(start_loop)
       do n = 1 , ntr
         do k = 1 , kz
           do i = ice1 , ice2
             do j = jce1 , jce2
+              num_loop = num_loop + 1
               chi(j,i,k,n) = chia(j,i,k,n)/sfs%psa(j,i)
             end do
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 17 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
 !
@@ -405,9 +529,12 @@ module mod_tendency
     !
     pten(:,:) = d_zero
     ! $OMP PARALLEL DO
+    !LOOP 18
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           divl(j,i,k) = (atm1%u(j+1,i+1,k)+atm1%u(j+1,i,k)- &
                          atm1%u(j,i+1,k)  -atm1%u(j,i,k)) + &
                         (atm1%v(j+1,i+1,k)+atm1%v(j,i+1,k)- &
@@ -417,21 +544,32 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 18 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     ! compute vertical sigma-velocity (qdot):
     !
     qdot(:,:,:)  = d_zero
     ! $OMP PARALLEL DO
+    !LOOP 19
+    call cpu_time(start_loop)
     do k = 2 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           qdot(j,i,k) = qdot(j,i,k-1) - (pten(j,i)+divl(j,i,k-1) / &
                        (dx2*mddom%msfx(j,i)*mddom%msfx(j,i)))* &
                        dsigma(k-1)/sfs%psa(j,i)
          end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 19 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     call exchange(qdot,1,jce1,jce2,ice1,ice2,1,kzp1)
@@ -440,9 +578,12 @@ module mod_tendency
     !
     omega(:,:,:) = d_zero
     ! $OMP PARALLEL DO
+    !LOOP 20
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           omega(j,i,k) = d_half*sfs%psa(j,i)*(qdot(j,i,k+1)+qdot(j,i,k)) + &
                       hsigma(k)*(pten(j,i)+                         &
                      ((atmx%u(j,i,k)    +atmx%u(j,i+1,k)+           &
@@ -455,6 +596,10 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 20 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     if ( iboudy == 4 ) then
@@ -467,39 +612,74 @@ module mod_tendency
     ! psc : forecast pressure
     !
     ! $OMP PARALLEL DO
+    !LOOP 21
+    call cpu_time(start_loop)
     do i = ici1 , ici2
       do j = jci1 , jci2
+        num_loop = num_loop + 1
         psc(j,i) = sfs%psb(j,i) + pten(j,i)*dt
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 21 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     if ( ma%has_bdyleft ) then
       ! $OMP PARALLEL DO
+      !LOOP 21
+      call cpu_time(start_loop)
       do i = ici1 , ici2
+        num_loop = num_loop + 1
         psc(jce1,i) = sfs%psb(jce1,i) + xpsb%bt(jce1,i)*dt
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 21 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdyright ) then
       ! $OMP PARALLEL DO
+      !LOOP 22
+      call cpu_time(start_loop)
       do i = ici1 , ici2
+        num_loop = num_loop + 1
         psc(jce2,i) = sfs%psb(jce2,i) + xpsb%bt(jce2,i)*dt
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 22 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdybottom ) then
       ! $OMP PARALLEL DO
+      !LOOP 23
+      call cpu_time(start_loop)
       do j = jce1 , jce2
+        num_loop = num_loop + 1
         psc(j,ice1) = sfs%psb(j,ice1) + xpsb%bt(j,ice1)*dt
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 23 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     if ( ma%has_bdytop ) then
       ! $OMP PARALLEL DO
+      !LOOP 24
+      call cpu_time(start_loop)
       do j = jce1 , jce2
+        num_loop = num_loop + 1
         psc(j,ice2) = sfs%psb(j,ice2) + xpsb%bt(j,ice2)*dt
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 24 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     !
@@ -510,13 +690,20 @@ module mod_tendency
       pt2tot = d_zero
 
       ! $OMP PARALLEL DO
+      !LOOP 25
+      call cpu_time(start_loop)
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop =  num_loop +1
           ptntot = ptntot + dabs(pten(j,i))
           pt2tot = pt2tot + dabs((psc(j,i)+sfs%psb(j,i)- &
                    d_two*sfs%psa(j,i))/(dt*dt*d_rfour))
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 25 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     !
@@ -541,9 +728,12 @@ module mod_tendency
     ! for dot-point variables.
     !
     ! $OMP PARALLEL DO
+    !LOOP 26
+    call cpu_time(start_loop)
     do k = 2 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           dudx = atm2%u(j+1,i,k) + atm2%u(j+1,i+1,k) - &
                  atm2%u(j,i,k)   - atm2%u(j,i+1,k)
           dvdx = atm2%v(j+1,i,k) + atm2%v(j+1,i+1,k) - &
@@ -572,6 +762,10 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 26 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     ! Initialize the tendencies
@@ -622,9 +816,12 @@ module mod_tendency
     ! compute the adiabatic term:
     !
     ! $OMP PARALLEL DO
+    !LOOP 27
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           rovcpm = rgas/(cpd*(d_one+0.8D0*(atmx%qx(j,i,k,iqv))))
           tv = atmx%t(j,i,k)*(d_one+ep1*(atmx%qx(j,i,k,iqv)))
           aten%t(j,i,k) = aten%t(j,i,k) + (omega(j,i,k)*rovcpm*tv) / &
@@ -632,6 +829,10 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 27 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_temperature_tendency('DIAB')
@@ -862,14 +1063,21 @@ module mod_tendency
     ! temperature tendency
     !
     ! $OMP PARALLEL DO
+    !LOOP 28
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           ! heating rate in deg/sec
           aten%t(j,i,k) = aten%t(j,i,k) + sfs%psb(j,i)*heatrt(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 28 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_temperature_tendency('HEAT')
@@ -886,23 +1094,37 @@ module mod_tendency
     ! add horizontal diffusion and pbl tendencies for t and qv
     !
     ! $OMP PARALLEL DO
+    !LOOP 29
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           aten%t(j,i,k) = aten%t(j,i,k) + adf%difft(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 29 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     ! $OMP PARALLEL DO
+    !LOOP 30
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           aten%qx(j,i,k,iqv) = aten%qx(j,i,k,iqv) + adf%diffqx(j,i,k,iqv)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 30 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     ! compute the condensation and precipitation terms for explicit
@@ -910,13 +1132,20 @@ module mod_tendency
     !
     if ( ipptls == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 31
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
+            num_loop = num_loop + 1
             aten%qx(j,i,k,iqc) = aten%qx(j,i,k,iqc) + adf%diffqx(j,i,k,iqc)
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 31 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       call condtq(psc)
     end if
@@ -944,40 +1173,61 @@ module mod_tendency
     ! forecast t, qv, and qc at tau+1:
     !
     ! $OMP PARALLEL DO
+    !LOOP 32
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           atmc%t(j,i,k) = atm2%t(j,i,k) + dt*aten%t(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 32 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     ! $OMP PARALLEL DO
+    !LOOP 33
+    call cpu_time(start_loop)
     do n = 1 , nqx
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
+            num_loop = num_loop + 1
             atmc%qx(j,i,k,n) = atm2%qx(j,i,k,n) + dt*aten%qx(j,i,k,n)
           end do
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 33 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     ! forecast tracer chi at at tau+1:
     !
     if ( ichem == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 34
+      call cpu_time(start_loop)
       do itr = 1 , ntr
         do k = 1 , kz
           do i = ici1 , ici2
             do j = jci1 , jci2
+              num_loop = num_loop + 1
               chic(j,i,k,itr) = chib(j,i,k,itr) + dt*chiten(j,i,k,itr)
             end do
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 34 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     !
@@ -985,9 +1235,12 @@ module mod_tendency
     !
     if ( ipgf == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 35
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
+            num_loop = num_loop + 1
             tvc = atmc%t(j,i,k)*(d_one+ep1*(atmc%qx(j,i,k,iqv))/psc(j,i))
             tva = atm1%t(j,i,k)*(d_one+ep1*(atmx%qx(j,i,k,iqv)))
             tvb = atm2%t(j,i,k)*(d_one+ep1* &
@@ -998,57 +1251,92 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 35 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       if ( ma%has_bdyleft ) then
         ! $OMP PARALLEL DO
+        !LOOP 36
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = ici1 , ici2
+            num_loop = num_loop + 1
             td(jce1,i,k) = atm1%t(jce1,i,k)*(d_one+ep1*(atmx%qx(jce1,i,k,iqv)))
             ttld(jce1,i,k) = td(jce1,i,k) - sfs%psa(jce1,i) * &
                         t00pg*((hsigma(k)*sfs%psa(jce1,i)+ptop)/p00pg)**pgfaa1
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 36 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdyright ) then
         ! $OMP PARALLEL DO
+        !LOOP 37
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = ici1 , ici2
+            num_loop = num_loop + 1
             td(jce2,i,k) = atm1%t(jce2,i,k)*(d_one+ep1*(atmx%qx(jce2,i,k,iqv)))
             ttld(jce2,i,k) = td(jce2,i,k) - sfs%psa(jce2,i) * &
                      t00pg*((hsigma(k)*sfs%psa(jce2,i)+ptop)/p00pg)**pgfaa1
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 37 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdybottom ) then
         ! $OMP PARALLEL DO
+        !LOOP 38
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             td(j,ice1,k) = atm1%t(j,ice1,k)*(d_one+ep1*(atmx%qx(j,ice1,k,iqv)))
             ttld(j,ice1,k) = td(j,ice1,k) - sfs%psa(j,ice1) * &
                      t00pg*((hsigma(k)*sfs%psa(j,ice1)+ptop)/p00pg)**pgfaa1
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 30 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdytop ) then
         ! $OMP PARALLEL DO
+        !LOOP 39
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             td(j,ice2,k) = atm1%t(j,ice2,k)*(d_one+ep1*(atmx%qx(j,ice2,k,iqv)))
             ttld(j,ice2,k) = td(j,ice2,k) - sfs%psa(j,ice2) * &
                      t00pg*((hsigma(k)*sfs%psa(j,ice2)+ptop)/p00pg)**pgfaa1
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 39 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     else if ( ipgf == 0 ) then
       ! $OMP PARALLEL DO
+      !LOOP 40
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
+            num_loop = num_loop + 1
             tvc = atmc%t(j,i,k)*(d_one+ep1*(atmc%qx(j,i,k,iqv))/psc(j,i))
             tva = atm1%t(j,i,k)*(d_one+ep1*(atmx%qx(j,i,k,iqv)))
             tvb = atm2%t(j,i,k)*(d_one+ep1* &
@@ -1057,42 +1345,74 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 40 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       if ( ma%has_bdyleft ) then
         ! $OMP PARALLEL DO
+        !LOOP 41
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = ici1 , ici2
+            num_loop = num_loop + 1
             td(jce1,i,k) = atm1%t(jce1,i,k)*(d_one+ep1*(atmx%qx(jce1,i,k,iqv)))
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 41 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdyright ) then
         ! $OMP PARALLEL DO
+        !LOOP 42
+        call cpu_time(start_loop)
         do k = 1 , kz
           do i = ici1 , ici2
+            num_loop = num_loop + 1
             td(jce2,i,k) = atm1%t(jce2,i,k)*(d_one+ep1*(atmx%qx(jce2,i,k,iqv)))
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 42 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdybottom ) then
         ! $OMP PARALLEL DO
+        !LOOP 43
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             td(j,ice1,k) = atm1%t(j,ice1,k)*(d_one+ep1*(atmx%qx(j,ice1,k,iqv)))
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 43 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
       if ( ma%has_bdytop ) then
         ! $OMP PARALLEL DO
+        !LOOP 44
+        call cpu_time(start_loop)
         do k = 1 , kz
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             td(j,ice2,k) = atm1%t(j,ice2,k)*(d_one+ep1*(atmx%qx(j,ice2,k,iqv)))
           end do
         end do
+        call cpu_time(end_loop)
+        write(stdout,*) 'Loop 44 time: ', start_loop - end_loop
+        write(stdout,*) 'Number of iterations: ', num_loop
+        num_loop = 0
         ! $OMP END PARALLEL DO
       end if
     end if
@@ -1103,14 +1423,21 @@ module mod_tendency
     !   put diffusion and pbl tendencies of u and v in difuu and difuv.
     !
     ! $OMP PARALLEL DO
+    !LOOP 45
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           adf%difuu(j,i,k) = aten%u(j,i,k)
           adf%difuv(j,i,k) = aten%v(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 45 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     call diffu_d(adf%difuu,atms%ubd3d,psdot,mddom%msfd,xkc,1)
@@ -1132,9 +1459,12 @@ module mod_tendency
     ! compute coriolis terms:
     !
     ! $OMP PARALLEL DO
+    !LOOP 46
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           aten%u(j,i,k) = aten%u(j,i,k) + &
                        mddom%coriol(j,i)*atm1%v(j,i,k)/mddom%msfd(j,i)
           aten%v(j,i,k) = aten%v(j,i,k) - &
@@ -1142,6 +1472,10 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 46 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('CORI')
@@ -1151,9 +1485,12 @@ module mod_tendency
     !
     if ( ipgf == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 47
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
           do j = jdi1 , jdi2
+            num_loop = num_loop + 1
             psasum = sfs%psa(j,i) + sfs%psa(j,i-1) + &
                      sfs%psa(j-1,i) + sfs%psa(j-1,i-1)
             sigpsa = psasum
@@ -1177,12 +1514,19 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 47 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     else if ( ipgf == 0 ) then
       ! $OMP PARALLEL DO
+      !LOOP 48
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = idi1 , idi2
           do j = jdi1 , jdi2
+            num_loop = num_loop + 1
             psasum = sfs%psa(j,i) + sfs%psa(j,i-1) + &
                      sfs%psa(j-1,i) + sfs%psa(j-1,i-1)
             sigpsa = psasum
@@ -1204,6 +1548,10 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 48 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
 #ifdef DEBUG
@@ -1214,8 +1562,11 @@ module mod_tendency
     !
     if ( ipgf == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 49
+      call cpu_time(start_loop)
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           tv = (ttld(j,i,kz)/sfs%psa(j,i))/(d_one+atmx%qx(j,i,kz,iqc)/ &
                                        (d_one+atmx%qx(j,i,kz,iqv)))
           phi(j,i,kz) = mddom%ht(j,i) + &
@@ -1224,13 +1575,20 @@ module mod_tendency
                   dlog((hsigma(kz)+ptop/sfs%psa(j,i))/(d_one+ptop/sfs%psa(j,i)))
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 49 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 50
+      call cpu_time(start_loop)
       do k = 1 , kzm1
         lev = kz - k
         do i = ice1 , ice2
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             tvavg = ((ttld(j,i,lev)*dsigma(lev)+ttld(j,i,lev+1)*   &
                     dsigma(lev+1))/(sfs%psa(j,i)*(dsigma(lev)+     &
                     dsigma(lev+1))))/(d_one+atmx%qx(j,i,lev,iqc)/  &
@@ -1241,25 +1599,39 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 50 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
     else if ( ipgf == 0 ) then
       ! $OMP PARALLEL DO
+      !LOOP 51
+      call cpu_time(start_loop)
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           tv = (td(j,i,kz)/sfs%psa(j,i))/(d_one+atmx%qx(j,i,kz,iqc)/  &
                                      (d_one+atmx%qx(j,i,kz,iqv)))
           phi(j,i,kz) = mddom%ht(j,i) - rgas * tv * &
                dlog((hsigma(kz)+ptop/sfs%psa(j,i))/(d_one+ptop/sfs%psa(j,i)))
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 51 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 52
+      call cpu_time(start_loop)
       do k = 1 , kzm1
         lev = kz - k
         do i = ice1 , ice2
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             tvavg = ((td(j,i,lev)*dsigma(lev)+td(j,i,lev+1)*       &
                     dsigma(lev+1))/(sfs%psa(j,i)*(dsigma(lev)+     &
                     dsigma(lev+1))))/(d_one+atmx%qx(j,i,lev,iqc) / &
@@ -1270,6 +1642,10 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 52 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     call exchange_lb(phi,1,jce1,jce2,ice1,ice2,1,kz)
@@ -1278,9 +1654,12 @@ module mod_tendency
     !
 
     ! $OMP PARALLEL DO
+    !LOOP 53
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           aten%u(j,i,k) = aten%u(j,i,k) -         &
                (sfs%psa(j-1,i-1)+sfs%psa(j-1,i)+  &
                 sfs%psa(j,i-1)+sfs%psa(j,i)) *    &
@@ -1294,6 +1673,10 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 53 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('GEOP')
@@ -1328,14 +1711,21 @@ module mod_tendency
     ! add the diffusion and pbl tendencies to aten%u and aten%v:
     !
     ! $OMP PARALLEL DO
+    !LOOP 54
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           aten%u(j,i,k) = aten%u(j,i,k) + adf%difuu(j,i,k)
           aten%v(j,i,k) = aten%v(j,i,k) + adf%difuv(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 54 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 #ifdef DEBUG
     call check_wind_tendency('DIFF')
@@ -1344,36 +1734,57 @@ module mod_tendency
     ! forecast p*u and p*v at tau+1:
     !
     ! $OMP PARALLEL DO
+    !LOOP 55
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           atmc%u(j,i,k) = atm2%u(j,i,k) + dt*aten%u(j,i,k)
           atmc%v(j,i,k) = atm2%v(j,i,k) + dt*aten%v(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 55 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
     !
     !  Couple TKE to ps for use in vertical advection
     !
     if ( ibltyp == 2 .or. ibltyp == 99 ) then
       ! $OMP PARALLEL DO
+      !LOOP 56
+      call cpu_time(start_loop)
       do k = 1 , kzp1
         do i = ice1 , ice2
           do j = jce1 , jce2
+            num_loop = num_loop + 1
             uwstatea%tkeps(j,i,k) = atm1%tke(j,i,k)*sfs%psa(j,i)
             uwstatea%advtke(j,i,k) = d_zero
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 56 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
 
       ! $OMP PARALLEL DO
+      !LOOP 57
+      call cpu_time(start_loop)
       do i = ice1 , ice2
         do j = jce1 , jce2
+          num_loop = num_loop + 1
           uwstatea%tkeps(j,i,kz+1) = atm1%tke(j,i,kz+1)*sfs%psa(j,i)
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 57 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
     if ( ibltyp == 2 .or. ibltyp == 99 ) then
@@ -1389,9 +1800,12 @@ module mod_tendency
     !   perform time smoothing operations.
     !
     ! $OMP PARALLEL DO
+    !LOOP 58
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
+          num_loop = num_loop + 1
           atm2%u(j,i,k) = omuhf*atm1%u(j,i,k)/mddom%msfd(j,i) + &
                           gnuhf*(atm2%u(j,i,k)+atmc%u(j,i,k))
           atm2%v(j,i,k) = omuhf*atm1%v(j,i,k)/mddom%msfd(j,i) + &
@@ -1419,25 +1833,39 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 58 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     ! $OMP PARALLEL DO
+    !LOOP 59
+    call cpu_time(start_loop)
     do k = 1 , kz
       do i = ici1 , ici2
         do j = jci1 , jci2
+          num_loop = num_loop + 1
           atm2%t(j,i,k) = omuhf*atm1%t(j,i,k) + &
                           gnuhf*(atm2%t(j,i,k)+atmc%t(j,i,k))
           atm1%t(j,i,k) = atmc%t(j,i,k)
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 59 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     ! $OMP PARALLEL DO
+    !LOOP 60 
+    call cpu_time(start_loop)
     do n = 1 , nqx
       do k = 1 , kz
         do i = ici1 , ici2
           do j = jci1 , jci2
+            num_loop = num_loop + 1
             qxas = atmc%qx(j,i,k,n)
             qxbs = omuhf*atm1%qx(j,i,k,n) + &
                    gnuhf*(atm2%qx(j,i,k,n)+atmc%qx(j,i,k,n))
@@ -1463,14 +1891,21 @@ module mod_tendency
         end do
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 60 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     ! $OMP END PARALLEL DO
 
     if ( ichem == 1 ) then
       ! $OMP PARALLEL DO
+      !LOOP 61
+      call cpu_time(start_loop)
       do itr = 1 , ntr
         do k = 1 , kz
           do i = ici1 , ici2
             do j = jci1 , jci2
+              num_loop = num_loop + 1
               chias = chic(j,i,k,itr)
               if ( chias < dlowval ) chias = dlowval
               chibs = omu*chia(j,i,k,itr)                             &
@@ -1482,14 +1917,25 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 61 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
     end if
+    !LOOP 62
+    call cpu_time(start_loop)
     do i = ici1 , ici2
       do j = jci1 , jci2
+        num_loop = num_loop + 1
         sfs%psb(j,i) = omuhf*sfs%psa(j,i) + gnuhf*(sfs%psb(j,i)+psc(j,i))
         sfs%psa(j,i) = psc(j,i)
       end do
     end do
+    call cpu_time(end_loop)
+    write(stdout,*) 'Loop 62 time: ', start_loop - end_loop
+    write(stdout,*) 'Number of iterations: ', num_loop
+    num_loop = 0
     !
     ! increment elapsed forecast time:
     !
@@ -1525,9 +1971,12 @@ module mod_tendency
           write(stderr,*) 'MAXVAL ATEN T :', maxv
           maxv = maxv - 0.001D0
           ! $OMP PARALLEL DO
+          !LOOP 63
+          call cpu_time(start_loop)
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
+                num_loop = num_loop + 1
                 if ( aten%t(jj,ii,kk) > maxv ) then
                   write(stderr,*) 'II :', global_cross_istart+ii-1 , &
                                 ', JJ :', global_cross_jstart+jj-1 , &
@@ -1536,6 +1985,10 @@ module mod_tendency
               end do
             end do
           end do
+          call cpu_time(end_loop)
+          write(stdout,*) 'Loop 63 time: ', start_loop - end_loop
+          write(stdout,*) 'Number of iterations: ', num_loop
+          num_loop = 0
           ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%u))
@@ -1543,9 +1996,12 @@ module mod_tendency
           write(stderr,*) 'MAXVAL ATEN U :', maxv
           maxv = maxv - 0.001D0
           ! $OMP PARALLEL DO
+          !LOOP 64
+          call cpu_time(start_loop)
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
+                num_loop = num_loop + 1
                 if ( aten%u(jj,ii,kk) > maxv ) then
                   write(stderr,*) 'II :', global_dot_istart+ii-1 , &
                                 ', JJ :', global_dot_jstart+jj-1 , ', KK :', kk
@@ -1553,6 +2009,10 @@ module mod_tendency
               end do
             end do
           end do
+          call cpu_time(end_loop)
+          write(stdout,*) 'Loop 64 time: ', start_loop - end_loop
+          write(stdout,*) 'Number of iterations: ', num_loop
+          num_loop = 0
           ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%v))
@@ -1560,9 +2020,12 @@ module mod_tendency
           write(stderr,*) 'MAXVAL ATEN V :', maxv
           maxv = maxv - 0.001D0
           ! $OMP PARALLEL DO
+          !LOOP 65
+          call cpu_time(start_loop)
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
+                num_loop = num_loop + 1
                 if ( aten%v(jj,ii,kk) > maxv ) then
                   write(stderr,*) 'II :', global_dot_istart+ii-1 , &
                                 ', JJ :', global_dot_jstart+jj-1 , ', KK :', kk
@@ -1570,6 +2033,10 @@ module mod_tendency
               end do
             end do
           end do
+          call cpu_time(end_loop)
+          write(stdout,*) 'Loop 65 time: ', start_loop - end_loop
+          write(stdout,*) 'Number of iterations: ', num_loop
+          num_loop = 0
           ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%qx(:,:,:,iqv)))
@@ -1577,9 +2044,12 @@ module mod_tendency
           write(stderr,*) 'MAXVAL ATEN QV :', maxv
           maxv = maxv - 0.001D0
           ! $OMP PARALLEL DO
+          !LOOP 66
+          call cpu_time(start_loop)
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
+                num_loop = num_loop + 1
                 if ( aten%qx(jj,ii,kk,iqv) > maxv ) then
                   write(stderr,*) 'II :', global_cross_istart+ii-1 , &
                                 ', JJ :', global_cross_jstart+jj-1 , &
@@ -1588,6 +2058,10 @@ module mod_tendency
               end do
             end do
           end do
+          call cpu_time(end_loop)
+          write(stdout,*) 'Loop 66 time: ', start_loop - end_loop
+          write(stdout,*) 'Number of iterations: ', num_loop
+          num_loop = 0
           ! $OMP END PARALLEL DO
         end if
         maxv = dabs(maxval(aten%qx(:,:,:,iqc)))
@@ -1595,9 +2069,12 @@ module mod_tendency
           write(stderr,*) 'MAXVAL ATEN QC :', maxv
           maxv = maxv - 0.001D0
           ! $OMP PARALLEL DO
+          !LOOP 67
+          call cpu_time(start_loop)
           do kk = 1 , kz
             do ii = ici1 , ici2
               do jj = jci1 , jci2
+                num_loop = num_loop + 1
                 if ( aten%qx(jj,ii,kk,iqc) > maxv ) then
                   write(stderr,*) 'II :', global_cross_istart+ii-1 , &
                                 ', JJ :', global_cross_jstart+jj-1 , &
@@ -1606,6 +2083,10 @@ module mod_tendency
               end do
             end do
           end do
+          call cpu_time(end_loop)
+          write(stdout,*) 'Loop 67 time: ', start_loop - end_loop
+          write(stdout,*) 'Number of iterations: ', num_loop
+          num_loop = 0
           ! $OMP END PARALLEL DO
         end if
         write (*,*) 'WHUUUUBBBASAAAGASDDWD!!!!!!!!!!!!!!!!'
@@ -1652,6 +2133,8 @@ module mod_tendency
       real(rk8) :: check_tt
       ierr = 0
       ! $OMP PARALLEL DO
+      !LOOP 68
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = ice1, ice2
           do j = jce1 , jce2
@@ -1665,6 +2148,7 @@ module mod_tendency
               write(stderr,*) 'Surface Temperature : ', sfs%tga(j,i)
               write(stderr,*) 'Vertical PTU profile: '
               do kk = 1 , kz
+                num_loop = num_loop + 1
                 write(stderr,'(i2,3f12.7)') kk, &
                         atms%pb3d(j,i,kk), atms%tb3d(j,i,kk), &
                         sqrt(atms%ubx3d(j,i,kk)**2+ &
@@ -1676,6 +2160,10 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 68 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       if ( ierr /= 0 ) then
         call fatal(__FILE__,__LINE__,'TEMP TENDENCY ERROR')
@@ -1691,9 +2179,12 @@ module mod_tendency
       real(rk8) :: check_ww , ten_wspd
       ierr = 0
       ! $OMP PARALLEL DO
+      !LOOP 69
+      call cpu_time(start_loop)
       do k = 1 , kz
         do i = ide1, ide2
           do j = jde1 , jde2
+            num_loop = num_loop + 1
             ten_wspd = sqrt(aten%u(j,i,k)**2+aten%v(j,i,k)**2)
             check_ww = (ten_wspd-last_wten(j,i,k))/psdot(j,i)
             if ( dabs(check_ww) > wind_tend_maxval ) then
@@ -1716,6 +2207,10 @@ module mod_tendency
           end do
         end do
       end do
+      call cpu_time(end_loop)
+      write(stdout,*) 'Loop 69 time: ', start_loop - end_loop
+      write(stdout,*) 'Number of iterations: ', num_loop
+      num_loop = 0
       ! $OMP END PARALLEL DO
       if ( ierr /= 0 ) then
         call fatal(__FILE__,__LINE__,'WIND TENDENCY ERROR')
