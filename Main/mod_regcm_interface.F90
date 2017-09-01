@@ -395,7 +395,7 @@ module mod_regcm_interface
       end if
       call cpu_time(end_loop_time)
       if ( myid == italk) then
-        write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
+        !write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
       end if
     end do
     ! !$OMP END PARALLEL DO
