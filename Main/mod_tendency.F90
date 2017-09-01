@@ -58,7 +58,7 @@ module mod_tendency
   real(rk8) , pointer , dimension(:,:,:) :: ps_4 
   real(rk8) , pointer , dimension(:,:) :: psc , pten
 
-  real(rk8) :: start_loop, end_loop
+  real(rk16) :: start_loop, end_loop
   integer(ik4) :: num_loop
 
 #ifdef DEBUG
@@ -182,7 +182,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 2 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 2 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -201,7 +201,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 3 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 3 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -217,7 +217,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 4 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 4 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -237,7 +237,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 5 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 5 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -255,7 +255,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 6 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 6 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -271,7 +271,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 7 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 7 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -290,7 +290,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 8 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 8 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -308,7 +308,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 9 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 9 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
 
@@ -325,7 +325,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 10 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 10 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -345,7 +345,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 11 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 11 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -363,7 +363,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 12 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 12 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -379,7 +379,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 13 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 13 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -398,7 +398,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 14 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 14 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -419,7 +419,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 15 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 15 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -438,7 +438,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 16 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 16 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -460,7 +460,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 17 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 17 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -545,7 +545,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 18 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 18 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -567,7 +567,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 19 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 19 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -597,7 +597,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 20 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 20 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -621,7 +621,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 21 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 21 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -635,7 +635,7 @@ module mod_tendency
         psc(jce1,i) = sfs%psb(jce1,i) + xpsb%bt(jce1,i)*dt
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 21 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 21 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -649,7 +649,7 @@ module mod_tendency
         psc(jce2,i) = sfs%psb(jce2,i) + xpsb%bt(jce2,i)*dt
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 22 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 22 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -663,7 +663,7 @@ module mod_tendency
         psc(j,ice1) = sfs%psb(j,ice1) + xpsb%bt(j,ice1)*dt
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 23 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 23 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -677,7 +677,7 @@ module mod_tendency
         psc(j,ice2) = sfs%psb(j,ice2) + xpsb%bt(j,ice2)*dt
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 24 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 24 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -701,7 +701,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 25 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 25 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -763,7 +763,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 26 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 26 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -830,7 +830,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 27 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 27 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1075,7 +1075,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 28 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 28 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1105,7 +1105,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 29 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 29 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1122,7 +1122,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 30 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 30 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1143,7 +1143,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 31 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 31 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1184,7 +1184,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 32 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 32 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1203,7 +1203,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 33 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 33 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1225,7 +1225,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 34 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 34 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1252,7 +1252,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 35 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 35 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1270,7 +1270,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 36 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 36 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1288,7 +1288,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 37 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 37 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1306,7 +1306,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 30 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 30 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1324,7 +1324,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 39 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 39 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1346,7 +1346,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 40 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 40 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1362,7 +1362,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 41 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 41 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1378,7 +1378,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 42 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 42 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1394,7 +1394,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 43 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 43 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1410,7 +1410,7 @@ module mod_tendency
           end do
         end do
         call cpu_time(end_loop)
-        write(stdout,*) 'Loop 44 time: ', start_loop - end_loop
+        write(stdout,*) 'Loop 44 time: ', end_loop -start_loop
         write(stdout,*) 'Number of iterations: ', num_loop
         num_loop = 0
         ! $OMP END PARALLEL DO
@@ -1435,7 +1435,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 45 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 45 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1473,7 +1473,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 46 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 46 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1515,7 +1515,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 47 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 47 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1549,7 +1549,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 48 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 48 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1576,7 +1576,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 49 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 49 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1600,7 +1600,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 50 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 50 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1619,7 +1619,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 51 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 51 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1643,7 +1643,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 52 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 52 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1674,7 +1674,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 53 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 53 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1723,7 +1723,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 54 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 54 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1746,7 +1746,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 55 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 55 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1767,7 +1767,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 56 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 56 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1782,7 +1782,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 57 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 57 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1834,7 +1834,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 58 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 58 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1853,7 +1853,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 59 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 59 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1892,7 +1892,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 60 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 60 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     ! $OMP END PARALLEL DO
@@ -1918,7 +1918,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 61 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 61 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -1933,7 +1933,7 @@ module mod_tendency
       end do
     end do
     call cpu_time(end_loop)
-    write(stdout,*) 'Loop 62 time: ', start_loop - end_loop
+    write(stdout,*) 'Loop 62 time: ', end_loop -start_loop
     write(stdout,*) 'Number of iterations: ', num_loop
     num_loop = 0
     !
@@ -1986,7 +1986,7 @@ module mod_tendency
             end do
           end do
           call cpu_time(end_loop)
-          write(stdout,*) 'Loop 63 time: ', start_loop - end_loop
+          write(stdout,*) 'Loop 63 time: ', end_loop -start_loop
           write(stdout,*) 'Number of iterations: ', num_loop
           num_loop = 0
           ! $OMP END PARALLEL DO
@@ -2010,7 +2010,7 @@ module mod_tendency
             end do
           end do
           call cpu_time(end_loop)
-          write(stdout,*) 'Loop 64 time: ', start_loop - end_loop
+          write(stdout,*) 'Loop 64 time: ', end_loop -start_loop
           write(stdout,*) 'Number of iterations: ', num_loop
           num_loop = 0
           ! $OMP END PARALLEL DO
@@ -2034,7 +2034,7 @@ module mod_tendency
             end do
           end do
           call cpu_time(end_loop)
-          write(stdout,*) 'Loop 65 time: ', start_loop - end_loop
+          write(stdout,*) 'Loop 65 time: ', end_loop -start_loop
           write(stdout,*) 'Number of iterations: ', num_loop
           num_loop = 0
           ! $OMP END PARALLEL DO
@@ -2059,7 +2059,7 @@ module mod_tendency
             end do
           end do
           call cpu_time(end_loop)
-          write(stdout,*) 'Loop 66 time: ', start_loop - end_loop
+          write(stdout,*) 'Loop 66 time: ', end_loop -start_loop
           write(stdout,*) 'Number of iterations: ', num_loop
           num_loop = 0
           ! $OMP END PARALLEL DO
@@ -2084,7 +2084,7 @@ module mod_tendency
             end do
           end do
           call cpu_time(end_loop)
-          write(stdout,*) 'Loop 67 time: ', start_loop - end_loop
+          write(stdout,*) 'Loop 67 time: ', end_loop -start_loop
           write(stdout,*) 'Number of iterations: ', num_loop
           num_loop = 0
           ! $OMP END PARALLEL DO
@@ -2161,7 +2161,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 68 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 68 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
@@ -2208,7 +2208,7 @@ module mod_tendency
         end do
       end do
       call cpu_time(end_loop)
-      write(stdout,*) 'Loop 69 time: ', start_loop - end_loop
+      write(stdout,*) 'Loop 69 time: ', end_loop -start_loop
       write(stdout,*) 'Number of iterations: ', num_loop
       num_loop = 0
       ! $OMP END PARALLEL DO
