@@ -1865,8 +1865,9 @@ module mod_tendency
 
     
     !LOOP 60 - HEAVY
-    !$OMP PARALLEL DO
+    
     call cpu_time(start_loop)
+    !$OMP PARALLEL DO
     do n = 1 , nqx
       do k = 1 , kz
         do i = ici1 , ici2
