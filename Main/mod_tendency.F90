@@ -555,7 +555,7 @@ module mod_tendency
     qdot(:,:,:)  = d_zero
     !LOOP 19 - HEAVY
     call cpu_time(start_loop)
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 2 , kz
       do i = ice1 , ice2
         do j = jce1 , jce2
@@ -566,7 +566,7 @@ module mod_tendency
          end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     call cpu_time(end_loop)
     !write(stdout,*) 'Loop 19 time: ', end_loop -start_loop
     !write(stdout,*) 'Number of iterations: ', num_loop
