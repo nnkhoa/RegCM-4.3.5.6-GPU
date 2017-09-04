@@ -50,7 +50,7 @@ module mod_tendency
 
   private
 
-  public :: allocate_mod_tend , tend
+  public :: allocate_mod_tend , tend, time_in_ms
 
   real(rk8) , pointer , dimension(:,:,:) :: divl
   real(rk8) , pointer , dimension(:,:,:) :: ttld , xkc , xkcf , td , phi
