@@ -243,6 +243,7 @@ module mod_regcm_interface
     real(rk8) :: start_loop_time
     real(rk8) :: end_loop_time
     integer(ik4) :: no_iteration, i, t_id, num_thread
+    integer(ik8) :: start_sub, end_sub
     character(len=32) :: appdat
 !
 #ifdef DEBUG
@@ -305,12 +306,12 @@ module mod_regcm_interface
       !write(stderr,*) 'Computing tendencies'
       !call cpu_time(start_sub_time)
       call date_and_time(values=values)
-      call time_in_ms(values, start_sub_time)
+      call time_in_ms(values, start_sub)
       call tend
       !call cpu_time(finish_sub_time)
       call date_and_time(values=values)
-      call time_in_ms(values, finish_sub_time)
-      tend_time = tend_time + (finish_sub_time - start_sub_time)
+      call time_in_ms(values, end_sub)
+      tend_time = tend_time + (end_sub - start_sub)
       !write(stderr,*) 'Tendencies Computation Time: ', &
       !        (finish_sub_time - start_sub_time)
       !
