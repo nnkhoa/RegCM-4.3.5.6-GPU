@@ -70,7 +70,7 @@ module mod_regcm_interface
   real(rk8) :: new_bound_time
   real(rk8) :: fill_bound_time
   integer(ik4) :: no_loop
-  integer(ik8) :: values
+  integer(ik8) :: values(8)
 
   data extime /d_zero/
   contains
