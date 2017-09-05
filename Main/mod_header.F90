@@ -34,6 +34,7 @@ module mod_header
   character (len=5) :: czone='?'
   integer(ik4) , dimension(8) :: tval
   real(rk4) :: start_time , last_time
+  real(rk16) :: r_start_time, r_end_time
 
   contains
 
@@ -43,6 +44,7 @@ module mod_header
 
     if ( myid == iocpu ) then 
       call cpu_time(start_time)
+      call time_in_ms(r_start_time)
       last_time = start_time
       write (stderr,"(/,2x,'This is RegCM trunk')")
       write (stderr,99001)  SVN_REV, __DATE__ , __TIME__   
@@ -102,14 +104,29 @@ module mod_header
     real(rk8) :: finish_time
 
     if ( myid == iocpu ) then
+      call time_in_ms(r_end_time)
       call cpu_time(finish_time)
       call date_and_time(zone=czone,values=tval)
       write(cdata,'(i0.4,"-",i0.2,"-",i0.2," ",i0.2,":",i0.2,":",i0.2,a)') &
             tval(1), tval(2), tval(3), tval(5), tval(6), tval(7), czone
       write (stderr,*) ': this run stops at  : ', trim(cdata)
       write (stderr,*) ': Total elapsed seconds of run : ', &
-                (finish_time - start_time)
+                (r_end_time - r_start_time)
     end if
   end subroutine finaltime
+
+  subroutine time_in_ms(rTime)
+    integer(ik8) :: values(8)
+    real(rk16) :: rTime
+    call date_and_time(values=values)
+    !Hours to minutes  
+    rTime = ( values(5) ) * 60
+    !Minutes to Second
+    rTime = ( rTime + values(6) ) *60
+    !Second to ms 
+    rTime = ( rTime + values(7) ) *1e3
+    !adding ms 
+    rTime = rTime + values(8)
+  end subroutine time_in_ms
 
 end module mod_header

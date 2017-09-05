@@ -238,10 +238,7 @@ module mod_regcm_interface
     implicit none
     real(rk8) , intent(in) :: timestr   ! starting time-step
     real(rk8) , intent(in) :: timeend   ! ending   time-step
-    real(rk8) :: start_sub_time
-    real(rk8) :: finish_sub_time
-    real(rk8) :: start_loop_time
-    real(rk8) :: end_loop_time
+    real(rk16) :: start_sub_time, finish_sub_time, start_loop_time, end_loop_time
     integer(ik4) :: no_iteration, i, t_id, num_thread
     real(rk16) :: start_sub, end_sub
     character(len=32) :: appdat
@@ -267,7 +264,7 @@ module mod_regcm_interface
     !     write(stdout,*) 'Number of thread: ', num_thread
     !   end if
     do while ( extime >= timestr .and. extime < timeend)  
-      call cpu_time(start_loop_time)
+      call time_in_ms(start_loop_time)
       no_loop = no_loop + 1
 #ifdef DEBUG
       ! call grid_nc_write(nc_4d)
@@ -304,23 +301,23 @@ module mod_regcm_interface
       ! Compute tendencies
       !
       !write(stderr,*) 'Computing tendencies'
-      !call cpu_time(start_sub_time)
+      call time_in_ms(start_sub_time)
       !call date_and_time(values=values)
-      call time_in_ms(start_sub)
+      !call time_in_ms(start_sub)
       call tend
-      !call cpu_time(finish_sub_time)
+      call time_in_ms(finish_sub_time)
       !call date_and_time(values=values)
-      call time_in_ms(end_sub)
-      tend_time = tend_time + (end_sub - start_sub)
+      !call time_in_ms(end_sub)
+      tend_time = tend_time + (finish_sub_time - start_sub_time)
       !write(stderr,*) 'Tendencies Computation Time: ', &
       !        (finish_sub_time - start_sub_time)
       !
       ! Split modes
       !
       !write(stderr,*) 'Split Mode Start'
-      call cpu_time(start_sub_time)
+      call time_in_ms(start_sub_time)
       call splitf
-      call cpu_time(finish_sub_time)
+      call time_in_ms(finish_sub_time)
       split_time = split_time + (finish_sub_time - start_sub_time)
       !write(stderr,*) 'Split Mode Time: ', &
       !        (finish_sub_time - start_sub_time)
@@ -337,7 +334,7 @@ module mod_regcm_interface
               'Calculate solar declination angle at ',toint10(idatex)
           end if
           !write(stderr,*) 'Solar declination angle Start'
-          call cpu_time(start_sub_time)
+          call time_in_ms(start_sub_time)
 #ifdef CLM
           if ( myid == italk ) then
             write(stderr,*) 'solar_clm'
@@ -349,7 +346,7 @@ module mod_regcm_interface
           end if
           call solar1
 #endif
-          call cpu_time(finish_sub_time)
+          call time_in_ms(finish_sub_time)
           solar_time = solar_time + (finish_sub_time - start_sub_time)
           !write(stdout,*) 'Solar declination angle Time: ', &
           !    (finish_sub_time - start_sub_time)
@@ -357,9 +354,9 @@ module mod_regcm_interface
           ! Read in new boundary conditions
           !
           !write(stdout,*) 'Read new Boundary Start'
-          call cpu_time(start_sub_time)
+          call time_in_ms(start_sub_time)
           call bdyin
-          call cpu_time(finish_sub_time)
+          call time_in_ms(finish_sub_time)
           new_bound_time = new_bound_time + (finish_sub_time - start_sub_time)
           !write(stdout,*) 'Read new Boundary Time: ', &
           !    (finish_sub_time - start_sub_time)
@@ -369,9 +366,9 @@ module mod_regcm_interface
         ! fill up the boundary values for xxb and xxa variables:
         !
         !write(stdout,*) 'Fill Boundary Start'
-        call cpu_time(start_sub_time)
+        call time_in_ms(start_sub_time)
         call bdyval(xbctime)
-        call cpu_time(finish_sub_time)
+        call time_in_ms(finish_sub_time)
         !write(stdout,*) 'Fill Boundary Time: ', &
         !      (finish_sub_time - start_sub_time)
         fill_bound_time = fill_bound_time + (finish_sub_time - start_sub_time)
@@ -399,7 +396,7 @@ module mod_regcm_interface
           write(6,'(a,a,f12.2)') 'Simulation time: ', appdat, extime
         end if
       end if
-      call cpu_time(end_loop_time)
+      call time_in_ms(end_loop_time)
       if ( myid == italk) then
         !write(stdout,*) 'Iteration time: ',  end_loop_time - start_loop_time
       end if
