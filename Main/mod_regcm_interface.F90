@@ -70,7 +70,7 @@ module mod_regcm_interface
   real(rk8) :: new_bound_time
   real(rk8) :: fill_bound_time
   integer(ik4) :: no_loop
-  integer(ik8) :: values(8)
+  !integer(ik8) :: values(8)
 
   data extime /d_zero/
   contains
@@ -305,12 +305,12 @@ module mod_regcm_interface
       !
       !write(stderr,*) 'Computing tendencies'
       !call cpu_time(start_sub_time)
-      call date_and_time(values=values)
-      call time_in_ms(values, start_sub)
+      !call date_and_time(values=values)
+      call time_in_ms(start_sub)
       call tend
       !call cpu_time(finish_sub_time)
-      call date_and_time(values=values)
-      call time_in_ms(values, end_sub)
+      !call date_and_time(values=values)
+      call time_in_ms(end_sub)
       tend_time = tend_time + (end_sub - start_sub)
       !write(stderr,*) 'Tendencies Computation Time: ', &
       !        (finish_sub_time - start_sub_time)
