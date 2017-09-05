@@ -2233,7 +2233,7 @@ module mod_tendency
   subroutine time_in_ms(rTime)
     integer(ik8) :: values(8)
     real(rk16) :: rTime
-    date_and_time(values=values)
+    call date_and_time(values=values)
     !Hours to minutes  
     rTime = ( values(5) ) * 60
     !Minutes to Second
