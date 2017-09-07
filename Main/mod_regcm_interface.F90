@@ -337,12 +337,12 @@ module mod_regcm_interface
           call time_in_ms(start_sub_time)
 #ifdef CLM
           if ( myid == italk ) then
-            write(stderr,*) 'solar_clm'
+            !write(stderr,*) 'solar_clm'
           end if
           call solar_clm(idatex,calday,declin,xyear)
 #else
           if ( myid == italk ) then
-            write(stderr,*) 'solar1'
+            !write(stderr,*) 'solar1'
           end if
           call solar1
 #endif
