@@ -734,7 +734,7 @@ module mod_tendency
     !LOOP 26
     
     call time_in_ms(start_loop)
-    !$OMP PARALLEL DO
+    ! $OMP PARALLEL DO
     do k = 2 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
@@ -767,7 +767,7 @@ module mod_tendency
         end do
       end do
     end do
-    !$OMP END PARALLEL DO
+    ! $OMP END PARALLEL DO
     call time_in_ms(end_loop)
     !write(stdout,*) 'Loop  26 time: ', end_loop -start_loop
     !write(stdout,*) 'Number of iterations: ', num_loop
