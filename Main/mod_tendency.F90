@@ -732,8 +732,9 @@ module mod_tendency
     !
     
     !LOOP 26
-    !$OMP PARALLEL DO
+    
     call time_in_ms(start_loop)
+    !$OMP PARALLEL DO
     do k = 2 , kz
       do i = idi1 , idi2
         do j = jdi1 , jdi2
